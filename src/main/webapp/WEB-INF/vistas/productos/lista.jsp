@@ -59,14 +59,14 @@
                     <tbody>
                         <c:forEach var="p" items="${productos}">
                             <tr>
-                                <td>${p.codigo()}</td>
-                                <td>${p.nombre()}</td>
-                                <td>${p.categoria()}</td>
-                                <td>$${p.precio()}</td>
-                                <td>${p.stock()}</td>
+                                <td>${p.codigo}</td>
+                                <td>${p.nombre}</td>
+                                <td>${p.categoria}</td>
+                                <td>$${p.precio}</td>
+                                <td>${p.stock}</td>
                                 <td>
                                     <c:choose>
-                                        <c:when test="${p.estado()}">
+                                        <c:when test="${p.estado}">
                                             <span class="badge badge-success">Activo</span>
                                         </c:when>
                                         <c:otherwise>
@@ -76,8 +76,8 @@
                                 </td>
                                 <td>
                                     <div class="acciones-btns">
-                                        <a href="${pageContext.request.contextPath}/productos?accion=editar&id=${p.id()}" class="btn btn-warning">Editar</a>
-                                        <a href="${pageContext.request.contextPath}/productos?accion=eliminar&id=${p.id()}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar este producto?')">Eliminar</a>
+                                        <a href="${pageContext.request.contextPath}/productos?accion=editar&id=${p.id}" class="btn btn-warning">Editar</a>
+                                        <a href="${pageContext.request.contextPath}/productos?accion=eliminar&id=${p.id}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar este producto?')">Eliminar</a>
                                     </div>
                                 </td>
                             </tr>

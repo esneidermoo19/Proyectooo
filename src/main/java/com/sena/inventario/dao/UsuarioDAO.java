@@ -1,126 +1,100 @@
 package com.sena.inventario.dao;
 
 import com.sena.inventario.modelo.Usuario;
-import com.sena.inventario.utilidad.ConexionDB;
+import com.sena.inventario.utilidad.JPAUtil;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
 
-import java.sql.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 public class UsuarioDAO {
 
     public List<Usuario> listarTodos() {
-        List<Usuario> usuarios = new ArrayList<>();
-        String sql = "SELECT * FROM usuarios WHERE estado = TRUE ORDER BY id";
-
-        try (Connection conn = ConexionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
-            while (rs.next()) {
-                usuarios.add(mapearUsuario(rs));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            TypedQuery<Usuario> query = em.createQuery(
+                "SELECT u FROM Usuario u WHERE u.estado = TRUE ORDER BY u.id", Usuario.class);
+            return query.getResultList();
+        } finally {
+            em.close();
         }
-        return usuarios;
     }
 
     public Usuario buscarPorId(int id) {
-        String sql = "SELECT * FROM usuarios WHERE id = ?";
-
-        try (Connection conn = ConexionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapearUsuario(rs);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            return em.find(Usuario.class, id);
+        } finally {
+            em.close();
         }
-        return null;
     }
 
     public Usuario autenticar(String username, String password) {
-        String sql = "SELECT * FROM usuarios WHERE username = ? AND password = ? AND estado = TRUE";
-
-        try (Connection conn = ConexionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, username);
-            ps.setString(2, password);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapearUsuario(rs);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            TypedQuery<Usuario> query = em.createQuery(
+                "SELECT u FROM Usuario u WHERE u.username = :username AND u.password = :password AND u.estado = TRUE",
+                Usuario.class);
+            query.setParameter("username", username);
+            query.setParameter("password", password);
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } finally {
+            em.close();
         }
-        return null;
     }
 
     public void insertar(Usuario usuario) {
-        String sql = "INSERT INTO usuarios (username, password, nombre, email, rol_id) VALUES (?, ?, ?, ?, ?)";
-
-        try (Connection conn = ConexionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, usuario.username());
-            ps.setString(2, usuario.password());
-            ps.setString(3, usuario.nombre());
-            ps.setString(4, usuario.email());
-            ps.setInt(5, usuario.rolId());
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(usuario);
+            em.getTransaction().commit();
+        } catch (RuntimeException e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
+        } finally {
+            em.close();
         }
     }
 
     public void actualizar(Usuario usuario) {
-        String sql = "UPDATE usuarios SET username=?, nombre=?, email=?, rol_id=? WHERE id=?";
-
-        try (Connection conn = ConexionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, usuario.username());
-            ps.setString(2, usuario.nombre());
-            ps.setString(3, usuario.email());
-            ps.setInt(4, usuario.rolId());
-            ps.setInt(5, usuario.id());
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(usuario);
+            em.getTransaction().commit();
+        } catch (RuntimeException e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
+        } finally {
+            em.close();
         }
     }
 
     public void eliminar(int id) {
-        String sql = "UPDATE usuarios SET estado = FALSE WHERE id = ?";
-
-        try (Connection conn = ConexionDB.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, id);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            Usuario usuario = em.find(Usuario.class, id);
+            if (usuario != null) {
+                usuario.setEstado(false);
+                em.merge(usuario);
+            }
+            em.getTransaction().commit();
+        } catch (RuntimeException e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
+        } finally {
+            em.close();
         }
-    }
-
-    private Usuario mapearUsuario(ResultSet rs) throws SQLException {
-        return new Usuario(
-            rs.getInt("id"),
-            rs.getString("username"),
-            rs.getString("password"),
-            rs.getString("nombre"),
-            rs.getString("email"),
-            rs.getInt("rol_id"),
-            rs.getBoolean("estado"),
-            rs.getTimestamp("fecha_registro").toLocalDateTime()
-        );
     }
 }

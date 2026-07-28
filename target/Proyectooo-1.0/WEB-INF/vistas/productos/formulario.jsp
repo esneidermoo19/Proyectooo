@@ -38,7 +38,7 @@
             <form action="${pageContext.request.contextPath}/productos" method="post">
                 <c:if test="${not empty producto}">
                     <input type="hidden" name="accion" value="actualizar">
-                    <input type="hidden" name="id" value="${producto.id()}">
+                    <input type="hidden" name="id" value="${producto.id}">
                 </c:if>
                 <c:if test="${empty producto}">
                     <input type="hidden" name="accion" value="insertar">
@@ -47,41 +47,41 @@
                 <div class="form-group">
                     <label for="codigo">Código *</label>
                     <input type="text" id="codigo" name="codigo" required maxlength="50"
-                           value="${producto.codigo()}" placeholder="Ej: PROD-001">
+                           value="${producto.codigo}" placeholder="Ej: PROD-001">
                 </div>
 
                 <div class="form-group">
                     <label for="nombre">Nombre *</label>
                     <input type="text" id="nombre" name="nombre" required maxlength="100"
-                           value="${producto.nombre()}" placeholder="Nombre del producto">
+                           value="${producto.nombre}" placeholder="Nombre del producto">
                 </div>
 
                 <div class="form-group">
                     <label for="descripcion">Descripción</label>
                     <textarea id="descripcion" name="descripcion"
-                              placeholder="Descripción del producto">${producto.descripcion()}</textarea>
+                              placeholder="Descripción del producto">${producto.descripcion}</textarea>
                 </div>
 
                 <div class="form-group">
                     <label for="precio">Precio *</label>
                     <input type="number" id="precio" name="precio" required step="0.01" min="0"
-                           value="${producto.precio()}" placeholder="0.00">
+                           value="${producto.precio}" placeholder="0.00">
                 </div>
 
                 <div class="form-group">
                     <label for="stock">Stock *</label>
                     <input type="number" id="stock" name="stock" required min="0"
-                           value="${producto.stock()}" placeholder="0">
+                           value="${producto.stock}" placeholder="0">
                 </div>
 
                 <div class="form-group">
                     <label for="categoria">Categoría</label>
                     <select id="categoria" name="categoria">
                         <option value="">Seleccionar categoría</option>
-                        <option value="Tecnología" ${producto.categoria() == 'Tecnología' ? 'selected' : ''}>Tecnología</option>
-                        <option value="Accesorios" ${producto.categoria() == 'Accesorios' ? 'selected' : ''}>Accesorios</option>
-                        <option value="Mobiliario" ${producto.categoria() == 'Mobiliario' ? 'selected' : ''}>Mobiliario</option>
-                        <option value="Papelería" ${producto.categoria() == 'Papelería' ? 'selected' : ''}>Papelería</option>
+                        <option value="Tecnología" ${producto.categoria == 'Tecnología' ? 'selected' : ''}>Tecnología</option>
+                        <option value="Accesorios" ${producto.categoria == 'Accesorios' ? 'selected' : ''}>Accesorios</option>
+                        <option value="Mobiliario" ${producto.categoria == 'Mobiliario' ? 'selected' : ''}>Mobiliario</option>
+                        <option value="Papelería" ${producto.categoria == 'Papelería' ? 'selected' : ''}>Papelería</option>
                     </select>
                 </div>
 

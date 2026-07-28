@@ -74,24 +74,24 @@ public class ProductoServlet extends HttpServlet {
             Integer.parseInt(req.getParameter("stock")),
             req.getParameter("categoria")
         );
+        producto.setDescripcion(req.getParameter("descripcion"));
         dao.insertar(producto);
         resp.sendRedirect(req.getContextPath() + "/productos?accion=listar");
     }
 
     private void actualizar(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
-        Producto producto = new Producto(
-            Integer.parseInt(req.getParameter("id")),
-            req.getParameter("codigo"),
-            req.getParameter("nombre"),
-            req.getParameter("descripcion"),
-            new BigDecimal(req.getParameter("precio")),
-            Integer.parseInt(req.getParameter("stock")),
-            req.getParameter("categoria"),
-            true,
-            null
-        );
-        dao.actualizar(producto);
+        int id = Integer.parseInt(req.getParameter("id"));
+        Producto producto = dao.buscarPorId(id);
+        if (producto != null) {
+            producto.setCodigo(req.getParameter("codigo"));
+            producto.setNombre(req.getParameter("nombre"));
+            producto.setDescripcion(req.getParameter("descripcion"));
+            producto.setPrecio(new BigDecimal(req.getParameter("precio")));
+            producto.setStock(Integer.parseInt(req.getParameter("stock")));
+            producto.setCategoria(req.getParameter("categoria"));
+            dao.actualizar(producto);
+        }
         resp.sendRedirect(req.getContextPath() + "/productos?accion=listar");
     }
 
