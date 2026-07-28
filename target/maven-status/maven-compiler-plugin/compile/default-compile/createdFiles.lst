@@ -1,0 +1,7 @@
+com\sena\inventario\controlador\ProductoServlet.class
+com\sena\inventario\modelo\Usuario.class
+com\sena\inventario\dao\UsuarioDAO.class
+com\sena\inventario\utilidad\ConexionDB.class
+com\sena\inventario\dao\ProductoDAO.class
+com\sena\inventario\modelo\Rol.class
+com\sena\inventario\modelo\Producto.class
